@@ -1,33 +1,46 @@
 pipeline{
-    agent any
-    tools {
-        maven 'MAVEN'
-    }
-    stages {
-        stage('Build Maven') {
-            steps{
-                checkout([$class: 'GitSCM', branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[credentialsId: 'devopshint', url: "https://github.com/phoomrapee-pee/test-jenkins-dockerhub.git"]]])
 
-                sh "mvn -Dmaven.test.failure.ignore=true clean package"
-                
-            }
-        }
-        stage('Build Docker Image') {
-            steps {
-                script {
-                  sh 'docker build -t devopshint/my-app-1.0 .'
-                }
-            }
-        }
-        stage('Deploy Docker Image') {
-            steps {
-                script {
-                 withCredentials([string(credentialsId: 'dockerhub-pwd', variable: 'dockerhubpwd')]) {
-                    sh 'docker login -u devopshint -p ${dockerhubpwd}'
-                 }  
-                 sh 'docker push devopshint/my-app-1.0'
-                }
-            }
-        }
-    }
+	agent {label 'linux'}
+
+	environment {
+		DOCKERHUB_CREDENTIALS=credentials('dockerhub')
+	}
+
+	stages {
+	    
+	    stage('gitclone') {
+
+			steps {
+				git 'https://github.com/shazforiot/nodeapp_test.git'
+			}
+		}
+
+		stage('Build') {
+
+			steps {
+				sh 'docker build -t thetips4you/nodeapp_test:latest .'
+			}
+		}
+
+		stage('Login') {
+
+			steps {
+				sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+			}
+		}
+
+		stage('Push') {
+
+			steps {
+				sh 'docker push thetips4you/nodeapp_test:latest'
+			}
+		}
+	}
+
+	post {
+		always {
+			sh 'docker logout'
+		}
+	}
+
 }
