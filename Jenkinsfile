@@ -1,7 +1,8 @@
 pipeline{
 
 	// agent {label 'linux'}
-
+	agent any
+	
 	environment {
 		DOCKERHUB_CREDENTIALS=credentials('phoomrapee-dockerhub')
 	}
