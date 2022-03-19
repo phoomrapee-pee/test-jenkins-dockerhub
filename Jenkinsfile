@@ -1,6 +1,6 @@
 pipeline {
   environment {
-    imagename = "yenigul/hacicenkins"
+    imagename = "phoomrapee/webserver"
     // registryCredential = 'yenigul-dockerhub'
     registryCredential = 'phoomrapee-dockerhub'
     dockerImage = ''
@@ -39,3 +39,6 @@ pipeline {
     }
   }
 }
+
+
+// # You Must install pulgin Dockerrrrrrrr
