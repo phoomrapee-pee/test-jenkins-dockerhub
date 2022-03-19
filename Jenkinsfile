@@ -2,7 +2,7 @@ pipeline{
 
 	// agent {label 'linux'}
 	agent any
-	
+
 	environment {
 		DOCKERHUB_CREDENTIALS=credentials('phoomrapee-dockerhub')
 	}
@@ -12,7 +12,8 @@ pipeline{
 	    stage('gitclone') {
 
 			steps {
-				git 'https://github.com/phoomrapee-pee/test-jenkins-dockerhub.git'
+				// git 'https://github.com/phoomrapee-pee/test-jenkins-dockerhub.git'
+				git([url: 'https://github.com/phoomrapee-pee/test-jenkins-dockerhub.git', branch: 'main', credentialsId: '3453c3ef-eda2-49d5-843a-bbdb06bd8c1a'])
 			}
 		}
 
