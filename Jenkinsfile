@@ -20,7 +20,8 @@ pipeline{
 		stage('Build') {
 
 			steps {
-				sh 'docker build -t webserver2 .'
+				// sh 'docker build -t webserver2 .'
+				dockerImage = docker.build "webserver2"
 			}
 		}
 
