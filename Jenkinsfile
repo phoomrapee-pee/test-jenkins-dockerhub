@@ -1,6 +1,6 @@
 pipeline {
   environment {
-    imagename = "phoomrapee/webserver"
+    imagename = "phoomrapee/jenkins-pipleine"
     // registryCredential = 'yenigul-dockerhub'
     registryCredential = 'phoomrapee-dockerhub'
     dockerImage = ''
