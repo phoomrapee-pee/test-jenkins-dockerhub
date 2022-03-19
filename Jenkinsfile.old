@@ -1,0 +1,49 @@
+pipeline{
+
+	// agent {label 'linux'}
+	agent any
+
+	environment {
+		DOCKERHUB_CREDENTIALS=credentials('phoomrapee-dockerhub')
+	}
+
+	stages {
+	    
+	    stage('gitclone') {
+
+			steps {
+				// git 'https://github.com/phoomrapee-pee/test-jenkins-dockerhub.git'
+				git([url: 'https://github.com/phoomrapee-pee/test-jenkins-dockerhub.git', branch: 'main', credentialsId: '3453c3ef-eda2-49d5-843a-bbdb06bd8c1a'])
+			}
+		}
+
+		stage('Build') {
+
+			steps {
+				sh 'docker build -t webserver2 .'
+				// dockerImage = docker.build "webserver2"
+			}
+		}
+
+		stage('Login') {
+
+			steps {
+				sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+			}
+		}
+
+		stage('Push') {
+
+			steps {
+				sh 'docker push phoomrapee/jenkins-pipleine:latest'
+			}
+		}
+	}
+
+	post {
+		always {
+			sh 'docker logout'
+		}
+	}
+
+}

@@ -1,49 +1,41 @@
-pipeline{
+pipeline {
+  environment {
+    imagename = "yenigul/hacicenkins"
+    // registryCredential = 'yenigul-dockerhub'
+    registryCredential = 'phoomrapee-dockerhub'
+    dockerImage = ''
+  }
+  agent any
+  stages {
+    stage('Cloning Git') {
+      steps {
+        git([url: 'https://github.com/phoomrapee-pee/test-jenkins-dockerhub.git', branch: 'main', credentialsId: '3453c3ef-eda2-49d5-843a-bbdb06bd8c1a'])
+      }
+    }
+    stage('Building image') {
+      steps{
+        script {
+          dockerImage = docker.build imagename
+        }
+      }
+    }
+    stage('Deploy Image') {
+      steps{
+        script {
+          docker.withRegistry( '', registryCredential ) {
+            dockerImage.push("$BUILD_NUMBER")
+             dockerImage.push('latest')
 
-	// agent {label 'linux'}
-	agent any
+          }
+        }
+      }
+    }
+    stage('Remove Unused docker image') {
+      steps{
+        sh "docker rmi $imagename:$BUILD_NUMBER"
+         sh "docker rmi $imagename:latest"
 
-	environment {
-		DOCKERHUB_CREDENTIALS=credentials('phoomrapee-dockerhub')
-	}
-
-	stages {
-	    
-	    stage('gitclone') {
-
-			steps {
-				// git 'https://github.com/phoomrapee-pee/test-jenkins-dockerhub.git'
-				git([url: 'https://github.com/phoomrapee-pee/test-jenkins-dockerhub.git', branch: 'main', credentialsId: '3453c3ef-eda2-49d5-843a-bbdb06bd8c1a'])
-			}
-		}
-
-		stage('Build') {
-
-			steps {
-				// sh 'docker build -t webserver2 .'
-				dockerImage = docker.build "webserver2"
-			}
-		}
-
-		stage('Login') {
-
-			steps {
-				sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
-			}
-		}
-
-		stage('Push') {
-
-			steps {
-				sh 'docker push phoomrapee/jenkins-pipleine:latest'
-			}
-		}
-	}
-
-	post {
-		always {
-			sh 'docker logout'
-		}
-	}
-
+      }
+    }
+  }
 }
